@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct ContentView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @State private var selectedTab = 0
     @State private var showingOnboarding = false
     
@@ -62,6 +62,6 @@ struct ContentView: View {
 
 #Preview {
     ContentView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
         .modelContainer(for: [User.self, SleepRecord.self, Challenge.self], inMemory: true)
 }

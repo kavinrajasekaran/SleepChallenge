@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct OnboardingView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @State private var name = ""
     @State private var email = ""
     @State private var currentStep = 0
@@ -179,5 +179,5 @@ struct FeatureRow: View {
 
 #Preview {
     OnboardingView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
 } 

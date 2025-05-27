@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct CreateChallengeView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var modelContext
     
@@ -334,6 +334,6 @@ struct FriendSelectionRow: View {
 
 #Preview {
     CreateChallengeView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
         .modelContainer(for: [User.self, Challenge.self], inMemory: true)
 } 

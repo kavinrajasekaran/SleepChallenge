@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct ProfileView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.modelContext) private var modelContext
     @Query private var sleepRecords: [SleepRecord]
     @State private var showingEditProfile = false
@@ -334,7 +334,7 @@ struct SettingRow: View {
 }
 
 struct EditProfileView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.dismiss) private var dismiss
     @State private var name: String = ""
     @State private var email: String = ""
@@ -407,6 +407,6 @@ struct EditProfileView: View {
 
 #Preview {
     ProfileView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
         .modelContainer(for: [User.self, SleepRecord.self], inMemory: true)
 } 

@@ -93,12 +93,13 @@ class DataManager: ObservableObject {
             let startOfDay = calendar.startOfDay(for: date)
             let endOfDay = calendar.date(byAdding: .day, value: 1, to: startOfDay)!
             
-            let predicate = #Predicate<SleepRecord> { record in
-                record.userId == user.id && record.date >= startOfDay && record.date < endOfDay
+            // Fetch existing records for this user and date
+            let allRecords = try context.fetch(FetchDescriptor<SleepRecord>())
+            let existingRecords = allRecords.filter { record in
+                record.userId == user.id && 
+                record.date >= startOfDay && 
+                record.date < endOfDay
             }
-            
-            let descriptor = FetchDescriptor<SleepRecord>(predicate: predicate)
-            let existingRecords = try context.fetch(descriptor)
             
             // Remove existing records for this date
             for record in existingRecords {
@@ -149,15 +150,10 @@ class DataManager: ObservableObject {
     func updateChallengeScores() async {
         guard let context = modelContext else { return }
         
-        // Fetch active challenges
-        let predicate = #Predicate<Challenge> { challenge in
-            challenge.status == .active
-        }
-        
-        let descriptor = FetchDescriptor<Challenge>(predicate: predicate)
-        
+        // Fetch all challenges and filter active ones
         do {
-            let activeChallenges = try context.fetch(descriptor)
+            let allChallenges = try context.fetch(FetchDescriptor<Challenge>())
+            let activeChallenges = allChallenges.filter { $0.status == .active }
             
             for challenge in activeChallenges {
                 await updateScoresForChallenge(challenge)
@@ -173,20 +169,16 @@ class DataManager: ObservableObject {
     private func updateScoresForChallenge(_ challenge: Challenge) async {
         guard let context = modelContext else { return }
         
-        let calendar = Calendar.current
-        
         for participantId in challenge.participantIds {
-            // Fetch sleep records for this participant during challenge period
-            let predicate = #Predicate<SleepRecord> { record in
-                record.userId == participantId &&
-                record.date >= challenge.startDate &&
-                record.date <= challenge.endDate
-            }
-            
-            let descriptor = FetchDescriptor<SleepRecord>(predicate: predicate)
-            
+            // Fetch all sleep records and filter for this participant and challenge period
             do {
-                let sleepRecords = try context.fetch(descriptor)
+                let allRecords = try context.fetch(FetchDescriptor<SleepRecord>())
+                let sleepRecords = allRecords.filter { record in
+                    record.userId == participantId &&
+                    record.date >= challenge.startDate &&
+                    record.date <= challenge.endDate
+                }
+                
                 let score = calculateChallengeScore(for: challenge.type, records: sleepRecords)
                 challenge.updateScore(for: participantId, score: score)
             } catch {
@@ -242,15 +234,12 @@ class DataManager: ObservableObject {
     private func updateUserStatistics(for challenge: Challenge) {
         guard let context = modelContext else { return }
         
-        // Fetch all participants
-        let predicate = #Predicate<User> { user in
-            challenge.participantIds.contains(user.id)
-        }
-        
-        let descriptor = FetchDescriptor<User>(predicate: predicate)
-        
+        // Fetch all users and filter participants
         do {
-            let participants = try context.fetch(descriptor)
+            let allUsers = try context.fetch(FetchDescriptor<User>())
+            let participants = allUsers.filter { user in
+                challenge.participantIds.contains(user.id)
+            }
             
             for participant in participants {
                 participant.totalChallengesParticipated += 1

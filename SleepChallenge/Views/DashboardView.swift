@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct DashboardView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.modelContext) private var modelContext
     @Query private var sleepRecords: [SleepRecord]
     @Query private var challenges: [Challenge]
@@ -196,7 +196,6 @@ struct DashboardView: View {
     
     private func syncSleepData() async {
         await dataManager.syncSleepData()
-        await dataManager.updateChallengeScores()
     }
 }
 
@@ -370,6 +369,6 @@ struct EmptyStateCard: View {
 
 #Preview {
     DashboardView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
         .modelContainer(for: [User.self, SleepRecord.self, Challenge.self], inMemory: true)
 } 

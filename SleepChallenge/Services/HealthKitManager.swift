@@ -25,6 +25,16 @@ class HealthKitManager: ObservableObject {
             return
         }
         
+        // Check if Info.plist has required usage descriptions
+        guard Bundle.main.object(forInfoDictionaryKey: "NSHealthShareUsageDescription") != nil else {
+            print("HealthKit: NSHealthShareUsageDescription not found in Info.plist")
+            DispatchQueue.main.async {
+                self.authorizationError = HealthKitError.notAvailable
+                self.isAuthorized = false
+            }
+            return
+        }
+        
         let typesToRead: Set<HKObjectType> = [
             sleepAnalysisType,
             heartRateType,
@@ -39,6 +49,7 @@ class HealthKitManager: ObservableObject {
                 self.authorizationError = nil
             }
         } catch {
+            print("HealthKit authorization error: \(error.localizedDescription)")
             DispatchQueue.main.async {
                 self.authorizationError = error
                 self.isAuthorized = false

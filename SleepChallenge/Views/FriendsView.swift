@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct FriendsView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.modelContext) private var modelContext
     @State private var showingAddFriend = false
     
@@ -140,7 +140,7 @@ struct FriendRow: View {
 }
 
 struct AddFriendView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.dismiss) private var dismiss
     @State private var email = ""
     @State private var isAdding = false
@@ -225,6 +225,6 @@ struct AddFriendView: View {
 
 #Preview {
     FriendsView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
         .modelContainer(for: [User.self, SleepRecord.self], inMemory: true)
 } 

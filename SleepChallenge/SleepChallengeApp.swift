@@ -10,7 +10,7 @@ import SwiftData
 
 @main
 struct SleepChallengeApp: App {
-    @StateObject private var dataManager = DataManager()
+    @StateObject private var dataManager = SimpleDataManager()
     
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([

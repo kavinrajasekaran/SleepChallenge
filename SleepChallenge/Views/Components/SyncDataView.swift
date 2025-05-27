@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct SyncDataView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.dismiss) private var dismiss
     @State private var selectedDate = Date()
     @State private var isSyncing = false
@@ -121,5 +121,5 @@ struct SyncDataView: View {
 
 #Preview {
     SyncDataView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
 } 

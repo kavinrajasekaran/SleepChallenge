@@ -3,7 +3,7 @@ import SwiftData
 
 struct ChallengeCard: View {
     let challenge: Challenge
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.modelContext) private var modelContext
     
     var body: some View {
@@ -161,15 +161,10 @@ struct ParticipantRow: View {
         }
         
         // Fetch user name from database
-        let predicate = #Predicate<User> { user in
-            user.id == participantId
-        }
-        
-        let descriptor = FetchDescriptor<User>(predicate: predicate)
-        
         do {
-            let users = try modelContext.fetch(descriptor)
-            return users.first?.name ?? "Unknown"
+            let allUsers = try modelContext.fetch(FetchDescriptor<User>())
+            let user = allUsers.first { $0.id == participantId }
+            return user?.name ?? "Unknown"
         } catch {
             return "Unknown"
         }
@@ -199,7 +194,7 @@ struct ParticipantRow: View {
     challenge.updateScore(for: UUID(), score: 8.2)
     
     return ChallengeCard(challenge: challenge)
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
         .modelContainer(for: [User.self, Challenge.self], inMemory: true)
         .padding()
 } 

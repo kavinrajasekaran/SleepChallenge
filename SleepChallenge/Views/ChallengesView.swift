@@ -2,7 +2,7 @@ import SwiftUI
 import SwiftData
 
 struct ChallengesView: View {
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.modelContext) private var modelContext
     @Query private var challenges: [Challenge]
     @State private var showingCreateChallenge = false
@@ -131,7 +131,7 @@ struct EmptyStateView: View {
 
 struct ChallengeDetailView: View {
     let challenge: Challenge
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.modelContext) private var modelContext
     @Query private var sleepRecords: [SleepRecord]
     
@@ -252,7 +252,7 @@ struct LeaderboardRow: View {
     let score: Double
     let challengeType: ChallengeType
     let isWinner: Bool
-    @EnvironmentObject var dataManager: DataManager
+    @EnvironmentObject var dataManager: SimpleDataManager
     @Environment(\.modelContext) private var modelContext
     
     var body: some View {
@@ -310,15 +310,10 @@ struct LeaderboardRow: View {
             return "You"
         }
         
-        let predicate = #Predicate<User> { user in
-            user.id == participantId
-        }
-        
-        let descriptor = FetchDescriptor<User>(predicate: predicate)
-        
         do {
-            let users = try modelContext.fetch(descriptor)
-            return users.first?.name ?? "Unknown"
+            let allUsers = try modelContext.fetch(FetchDescriptor<User>())
+            let user = allUsers.first { $0.id == participantId }
+            return user?.name ?? "Unknown"
         } catch {
             return "Unknown"
         }
@@ -369,6 +364,6 @@ struct DailyProgressRow: View {
 
 #Preview {
     ChallengesView()
-        .environmentObject(DataManager())
+        .environmentObject(SimpleDataManager())
         .modelContainer(for: [Challenge.self, User.self, SleepRecord.self], inMemory: true)
 } 
