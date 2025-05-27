@@ -10,9 +10,13 @@ import SwiftData
 
 @main
 struct SleepChallengeApp: App {
+    @StateObject private var dataManager = DataManager()
+    
     var sharedModelContainer: ModelContainer = {
         let schema = Schema([
-            Item.self,
+            User.self,
+            SleepRecord.self,
+            Challenge.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
 
@@ -26,6 +30,10 @@ struct SleepChallengeApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(dataManager)
+                .onAppear {
+                    dataManager.setModelContext(sharedModelContainer.mainContext)
+                }
         }
         .modelContainer(sharedModelContainer)
     }
