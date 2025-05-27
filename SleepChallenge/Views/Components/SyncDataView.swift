@@ -46,8 +46,10 @@ struct SyncDataView: View {
                 // Health Kit Status
                 VStack(alignment: .leading, spacing: 10) {
                     HStack {
-                        Image(systemName: dataManager.isHealthKitAuthorized ? "checkmark.circle.fill" : "exclamationmark.triangle.fill")
-                            .foregroundColor(dataManager.isHealthKitAuthorized ? .green : .orange)
+                        Image(systemName: dataManager.isHealthKitAuthorized ? "checkmark.circle.fill" : 
+                              (dataManager.healthKitStatus == "Simulator Mode" ? "laptopcomputer" : "exclamationmark.triangle.fill"))
+                            .foregroundColor(dataManager.isHealthKitAuthorized ? .green : 
+                                           (dataManager.healthKitStatus == "Simulator Mode" ? .blue : .orange))
                         
                         Text("HealthKit Access")
                             .font(.headline)
@@ -57,11 +59,13 @@ struct SyncDataView: View {
                     
                     Text(dataManager.isHealthKitAuthorized ? 
                          "Connected to Apple Health" : 
-                         "HealthKit access required to sync sleep data")
+                         (dataManager.healthKitStatus == "Simulator Mode" ? 
+                          "Running in simulator mode with mock data" :
+                          "HealthKit access required to sync sleep data"))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                     
-                    if !dataManager.isHealthKitAuthorized {
+                    if !dataManager.isHealthKitAuthorized && dataManager.healthKitStatus != "Simulator Mode" {
                         Button("Request Access") {
                             Task {
                                 await dataManager.requestHealthKitAuthorization()
@@ -86,15 +90,16 @@ struct SyncDataView: View {
                             Image(systemName: "arrow.clockwise")
                         }
                         
-                        Text(isSyncing ? "Syncing..." : "Sync Sleep Data")
+                        Text(isSyncing ? "Syncing..." : 
+                             (dataManager.healthKitStatus == "Simulator Mode" ? "Generate Mock Data" : "Sync Sleep Data"))
                     }
                     .frame(maxWidth: .infinity)
                     .padding()
-                    .background(dataManager.isHealthKitAuthorized ? Color.blue : Color.gray)
+                    .background(Color.blue)
                     .foregroundColor(.white)
                     .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
-                .disabled(!dataManager.isHealthKitAuthorized || isSyncing)
+                .disabled(isSyncing)
             }
             .padding()
             .navigationTitle("Sync Data")

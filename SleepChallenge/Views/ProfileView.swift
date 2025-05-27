@@ -175,11 +175,11 @@ struct ProfileView: View {
             VStack(spacing: 0) {
                 SettingRow(
                     title: "HealthKit Access",
-                    subtitle: dataManager.isHealthKitAuthorized ? "Connected" : "Not Connected",
+                    subtitle: dataManager.healthKitStatus,
                     icon: "heart.fill",
-                    color: dataManager.isHealthKitAuthorized ? .green : .red
+                    color: dataManager.isHealthKitAuthorized ? .green : (dataManager.healthKitStatus == "Simulator Mode" ? .blue : .red)
                 ) {
-                    if !dataManager.isHealthKitAuthorized {
+                    if !dataManager.isHealthKitAuthorized && dataManager.healthKitStatus != "Simulator Mode" {
                         Task {
                             await dataManager.requestHealthKitAuthorization()
                         }
