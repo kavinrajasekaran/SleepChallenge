@@ -141,13 +141,10 @@ struct OnboardingView: View {
                 currentStep += 1
             }
         } else {
-            // Final step - create user and request permissions
-            Task {
-                isRequestingPermissions = true
-                await dataManager.requestHealthKitAuthorization()
-                dataManager.createUser(name: name, email: email)
-                isRequestingPermissions = false
-            }
+            // Final step - just create the user.
+            // DO NOT request HealthKit permission here.
+            // This should only be done from the ProfileView for this test.
+            dataManager.createUser(name: name, email: email)
         }
     }
 }
